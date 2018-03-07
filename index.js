@@ -29,14 +29,20 @@ function checkCollision(rock) {
     const dodgerLeftEdge = positionToInteger(DODGER.style.left)
 
     // FIXME: The DODGER is 40 pixels wide -- how do we get the right edge?
-    const dodgerRightEdge = 0;
-
+    const dodgerRightEdge = positionToInteger(DODGER.style.right)
+    DODGER.style.right = `${dodgerLeftEdge + 40}px`
     const rockLeftEdge = positionToInteger(rock.style.left)
 
     // FIXME: The rock is 20 pixel's wide -- how do we get the right edge?
-    const rockRightEdge = 0;
+    const rockRightEdge = positionToInteger(rock.style.right);
+    rock.style.right = `${rockLeftEdge + 20}px`
 
-    if (false /**
+    if (
+      `${rockLeftEdge < dodgerLeftEdge && rockRightEdge > dodgerLeftEdge}` ||
+      `${rockLeftEdge > dodgerLeftEdge && rockRightEdge < dodgerRightEdge}` ||
+      `${rockLeftEdge < dodgerRightEdge && rockRightEdge > dodgerRightEdge}`
+
+      /**
                * Think about it -- what's happening here?
                * There's been a collision if one of three things is true:
                * 1. The rock's left edge is < the DODGER's left edge,
@@ -46,9 +52,16 @@ function checkCollision(rock) {
                * 3. The rock's left edge is < the DODGER's right edge,
                *    and the rock's right edge is > the DODGER's right edge
                */) {
-      return true
+      return true;
     }
+
+   if (`${ rockLeftEdge < dodgerLeftEdge && rockRightEdge < dodgerLeftEdge}` ||
+     `${rockLeftEdge > dodgerRightEdge && rockRightEdge > dodgerRightEdge}`) {
+      return false
+    }
+
   }
+
 }
 
 function createRock(x) {
@@ -59,8 +72,15 @@ function createRock(x) {
 
   // Hmmm, why would we have used `var` here?
   var top = 0
+  function step() {
+    rock.style.top = `${top += 2}px`
 
-  rock.style.top = top
+    if (top < 400) {
+      window.requestAnimationFrame(step)
+    }
+  }
+  window.requestAnimationFrame(step)
+
 
   /**
    * Now that we have a rock, we'll need to append
@@ -73,12 +93,18 @@ function createRock(x) {
    * seems like a good pace.)
    */
   function moveRock() {
+
+
+
     // implement me!
     // (use the comments below to guide you!)
     /**
      * If a rock collides with the DODGER,
      * we should call endGame()
      */
+     if ( checkCollision() === true ) {
+       endGame();
+     }
 
     /**
      * Otherwise, if the rock hasn't reached the bottom of
@@ -95,6 +121,8 @@ function createRock(x) {
 
   // Add the rock to ROCKS so that we can remove all rocks
   // when there's a collision
+
+
   ROCKS.push(rock)
 
   // Finally, return the rock element you've created
@@ -108,9 +136,33 @@ function createRock(x) {
  * Finally, alert "YOU LOSE!" to the player.
  */
 function endGame() {
+
+  clearInterval(gameInterval);
+
+  window.removeEventListener('keydown', moveDodger);
+
+  window.removeEventListener('keydown', moveDodger);
+
+  alert('YOU LOSE!');
+
 }
 
 function moveDodger(e) {
+
+
+  if (e.which === LEFT_ARROW) {
+    moveDodgerLeft();
+    e.stopPropagation()
+    e.preventDefault()
+
+  }
+
+
+  if (e.which === RIGHT_ARROW) {
+    moveDodgerRight();
+    return e.preventDefault()
+  }
+
   // implement me!
   /**
    * This function should call `moveDodgerLeft()`
@@ -122,6 +174,18 @@ function moveDodger(e) {
 }
 
 function moveDodgerLeft() {
+
+var left = '0px'
+  function step() {
+
+    DODGER.style.left = positionToInteger(`${left-4}px`)
+
+    if (left > positionToInteger(DODGER.style.left)) {
+      window.requestAnimationFrame(step)
+    }
+  }
+
+  window.requestAnimationFrame(step)
   // implement me!
   /**
    * This function should move DODGER to the left
@@ -130,7 +194,18 @@ function moveDodgerLeft() {
 }
 
 function moveDodgerRight() {
-  // implement me!
+
+var left = '360px'
+
+  function step() {
+    DODGER.style.left = positionToInteger(`${left }px`)
+
+    if (left < positionToInteger(DODGER.style.left) ) {
+      window.requestAnimationFrame(step)
+    }
+  }
+
+  window.requestAnimationFrame(step)
   /**
    * This function should move DODGER to the right
    * (mabye 4 pixels?). Use window.requestAnimationFrame()!
