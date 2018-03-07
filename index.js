@@ -87,7 +87,7 @@ function createRock(x) {
    * it to GAME and move it downwards.
    */
 
-
+document.getElementByClassName('rock').remove();
   /**
    * This function moves the rock. (2 pixels at a time
    * seems like a good pace.)
